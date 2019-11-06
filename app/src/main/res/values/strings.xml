@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">WALLPAPER</string>
+    <string name="photo_label">Photo by</string>
+    <string name="website_label">on Unsplash</string>
+    <string name="downloading">Downloading</string>
+    <string name="download_complete">Download Complete</string>
+    <string name="no_internet_connection">No internet Connection</string>
+    <string name="maximum_resolution">Download it to view as maximum resolution</string>
+    <string name="preview_quality">Preview Quality</string>
+    <string name="caption_quality">Preview quality with a width of 1080 pixels. If you want to the original size you must download it.</string>
+</resources>
