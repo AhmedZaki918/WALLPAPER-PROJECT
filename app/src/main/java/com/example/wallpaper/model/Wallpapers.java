@@ -3,9 +3,21 @@ package com.example.wallpaper.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
+@Entity(tableName = "wallpaper")
 public class Wallpapers implements Parcelable {
+
+
+    @PrimaryKey(autoGenerate = false)
+    @SerializedName("id")
+    @NonNull
+    // Id for each item
+    private String id;
 
     // All dimensions of the image
     @SerializedName("urls")
@@ -15,7 +27,14 @@ public class Wallpapers implements Parcelable {
     @SerializedName("user")
     public User user;
 
+    // Constructor for our class
+    public Wallpapers(Urls urls, User user) {
+        this.urls = urls;
+        this.user = user;
+    }
+
     protected Wallpapers(Parcel in) {
+        id = in.readString();
         urls = in.readParcelable(Urls.class.getClassLoader());
         user = in.readParcelable(User.class.getClassLoader());
     }
@@ -32,6 +51,7 @@ public class Wallpapers implements Parcelable {
         }
     };
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -39,7 +59,18 @@ public class Wallpapers implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
         parcel.writeParcelable(urls, i);
         parcel.writeParcelable(user, i);
+    }
+
+    // Getter
+    public String getId() {
+        return id;
+    }
+
+    // Setter
+    public void setId(String id) {
+        this.id = id;
     }
 }

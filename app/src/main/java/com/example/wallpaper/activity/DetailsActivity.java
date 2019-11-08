@@ -14,15 +14,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.wallpaper.BuildConfig;
+import com.example.wallpaper.database.AppDatabase;
+import com.example.wallpaper.database.AppExecutors;
 import com.example.wallpaper.helper.CustomBroadcastReceiver;
 import com.example.wallpaper.R;
 import com.example.wallpaper.helper.SampleDialog;
 import com.example.wallpaper.adapter.Constants;
 import com.example.wallpaper.model.Wallpapers;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -49,6 +53,10 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView shareButton;
     @BindView(R.id.iv_info)
     ImageView infoButton;
+    @BindView(R.id.iv_favourite)
+    ImageView favouriteButton;
+    @BindView(R.id.scroll_view)
+    ScrollView scrollView;
 
     // Create BroadcastReceiver object
     CustomBroadcastReceiver broadcastReceiver;
@@ -61,6 +69,11 @@ public class DetailsActivity extends AppCompatActivity {
     // Obj from model class
     Wallpapers wallpapers;
 
+    // Member variable for the Database
+    private AppDatabase mDb;
+
+    private int index = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +81,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         // Prepare the code to use ButterKnife library
         ButterKnife.bind(this);
+
+        // Find a reference to the AppDatabase class
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         // Prepare the intent to use it
         Intent intent = getIntent();
@@ -110,6 +126,14 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 openDialog();
+            }
+        });
+
+        // Click listener on favourite button
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveWallpaper();
             }
         });
     }
@@ -189,5 +213,47 @@ public class DetailsActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return bmpUri;
+    }
+
+
+    // Save the wallpaper in the favourites
+    private void saveWallpaper() {
+
+        if (index == 0) {
+
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    // Insert the selected move to the database
+                    mDb.wallpaperDao().insertWallpaper(wallpapers);
+
+                    favouriteButton.setImageResource(R.drawable.baseline_favorite_white_24);
+
+                    Snackbar snackbar = Snackbar
+                            .make(scrollView, "Added to favourite", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+
+                }
+            });
+
+            index++;
+        } else {
+
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    // Delete the selected move by it's position
+                    mDb.wallpaperDao().deleteWallpaper(wallpapers);
+
+                    favouriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24);
+
+                    Snackbar snackbar = Snackbar
+                            .make(scrollView, "Removed from favourite", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+
+                }
+            });
+            index = 0;
+        }
     }
 }

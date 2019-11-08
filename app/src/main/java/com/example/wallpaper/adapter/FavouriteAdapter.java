@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,39 +19,47 @@ import java.util.List;
 
 
 /**
- * An {@link MainAdapter} knows how to create a list item layout for each picture
+ * An {@link FavouriteAdapter} knows how to create a list item layout for each picture
  * in the data source (a list of {@link Wallpapers} objects).
  * <p>
  * These list item layouts will be provided to an adapter view like ListView
  * to be displayed to the user.
  */
-public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.ViewHolder> {
 
     private Context mContext;
     private List<Wallpapers> mWallpapers;
 
-    // Constructor for our MainAdapter
-    public MainAdapter(Context mContext, List<Wallpapers> mWallpapers) {
+    // Constructor for our FavouriteAdapter
+    public FavouriteAdapter(Context mContext) {
         this.mContext = mContext;
-        this.mWallpapers = mWallpapers;
     }
 
+    // Getter method for List<Wallpapers>
+    public List<Wallpapers> getmWallpapers() {
+        return mWallpapers;
+    }
+
+    // Setter method for List<Wallpapers>
+    public void setmWallpapers(List<Wallpapers> mWallpapers) {
+        this.mWallpapers = mWallpapers;
+        notifyDataSetChanged();
+    }
 
     /**
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
      * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
      *
-     * @param parent The ViewGroup that these ViewHolders are contained within.
-     * @param viewType  Id for the list item layout
+     * @param parent   The ViewGroup that these ViewHolders are contained within.
+     * @param viewType Id for the list item layout
      * @return A new ViewHolder that holds the View for each list item
      */
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_main, null, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_favourite, null, false);
         return new ViewHolder(view);
     }
-
 
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified
@@ -73,9 +80,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         // String variable to get url of the picture
         String picUrl = currentItem.urls.getmRegular();
 
-//        // Set the given text on the view
-//        holder.mPhotographer.setText(currentItem.user.getmName());
-
         // Display the image by Picasso library
         Picasso.with(mContext).load(picUrl)
                 .into(holder.mWallpaper);
@@ -93,37 +97,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
 
     }
 
-    /**
-     * This method simply returns the number of items to display. It is used behind the scenes
-     * to help layout our Views and for animations.
-     *
-     * @return The number of items available in our wallpapers
-     */
     @Override
     public int getItemCount() {
-        return mWallpapers.size();
+        return mWallpapers != null ? mWallpapers.size() : 0;
+
     }
 
-    /**
-     * Cache of the children views for a list item.
-     */
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // Initialize the views
-        private ImageView mWallpaper;
-        private TextView mPhotographer;
 
-        /**
-         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
-         * TextView and ImageView
-         *
-         * @param itemView The View that you inflated in
-         *                 {@link MainAdapter#onCreateViewHolder(ViewGroup, int)}
-         */
+        private ImageView mWallpaper;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Find a reference to the views
-            mWallpaper = itemView.findViewById(R.id.iv_picture);
-            mPhotographer = itemView.findViewById(R.id.tv_photographer);
+            mWallpaper = itemView.findViewById(R.id.iv_image);
         }
     }
 }

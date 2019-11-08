@@ -17,12 +17,19 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".activity.FavouriteActivity"
+            android:label="Favourite">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.wallpaper.activity.MainActivity" />
+
+        </activity>
+        <activity
             android:name=".activity.DetailsActivity"
             android:label="Details">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.wallpaper.activity.MainActivity" />
-
         </activity>
         <activity android:name=".activity.MainActivity">
             <intent-filter>
