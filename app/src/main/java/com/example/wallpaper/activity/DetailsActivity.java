@@ -1,5 +1,6 @@
 package com.example.wallpaper.activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -8,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -60,24 +63,35 @@ public class DetailsActivity extends AppCompatActivity {
 
     // Create BroadcastReceiver object
     CustomBroadcastReceiver broadcastReceiver;
+    ActionBar actionBar;
+
+    // Obj from model class
+    Wallpapers wallpapers;
+
 
     // String variables to store the given value passed by the intent
     private String mRegularDimensionImage;
     private String mPhotographer;
     private String mHighDimensionImage;
 
-    // Obj from model class
-    Wallpapers wallpapers;
-
     // Member variable for the Database
     private AppDatabase mDb;
 
+    // Int variable to switch between favourite case and vice versa
     private int index = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        // Change the default color of the action bar
+        actionBar = getSupportActionBar();
+        //Setting up Action bar color using # color code.
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+        }
 
         // Prepare the code to use ButterKnife library
         ButterKnife.bind(this);
@@ -138,7 +152,7 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
-
+    // Method to open alert dialog
     private void openDialog() {
         SampleDialog exampleDialog = new SampleDialog();
         exampleDialog.show(getSupportFragmentManager(), "example dialog");
@@ -221,6 +235,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (index == 0) {
 
+            // Save wallpaper in the database
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -230,7 +245,7 @@ public class DetailsActivity extends AppCompatActivity {
                     favouriteButton.setImageResource(R.drawable.baseline_favorite_white_24);
 
                     Snackbar snackbar = Snackbar
-                            .make(scrollView, "Added to favourite", Snackbar.LENGTH_SHORT);
+                            .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
                     snackbar.show();
 
                 }
@@ -239,6 +254,7 @@ public class DetailsActivity extends AppCompatActivity {
             index++;
         } else {
 
+            // Remove wallpaper from the database
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
@@ -248,7 +264,7 @@ public class DetailsActivity extends AppCompatActivity {
                     favouriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24);
 
                     Snackbar snackbar = Snackbar
-                            .make(scrollView, "Removed from favourite", Snackbar.LENGTH_SHORT);
+                            .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);
                     snackbar.show();
 
                 }

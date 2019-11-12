@@ -73,8 +73,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         // String variable to get url of the picture
         String picUrl = currentItem.urls.getmRegular();
 
-//        // Set the given text on the view
-//        holder.mPhotographer.setText(currentItem.user.getmName());
+        // Set the given text on the view
+        holder.mPhotographer.setText(currentItem.user.getmName());
 
         // Display the image by Picasso library
         Picasso.with(mContext).load(picUrl)

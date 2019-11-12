@@ -4,10 +4,21 @@
     <string name="website_label">on Unsplash</string>
     <string name="downloading">Downloading</string>
     <string name="download_complete">Download Complete</string>
-    <string name="no_internet_connection">No internet Connection</string>
-    <string name="maximum_resolution">Download it to view as maximum resolution</string>
     <string name="preview_quality">Preview Quality</string>
     <string name="caption_quality">Preview quality with a width of 1080 pixels. If you want the original size you must download the photo.</string>
     <string name="settings_menu_item">Settings</string>
-    <string name="no_internet">Check your internet connection</string>
+    <string name="no_internet">Connection lost</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="retry">Retry</string>
+    <string name="added_to_favou">Added to favourite</string>
+    <string name="removed_favou">Removed from favourite</string>
+    <string name="cancel">Cancel</string>
+    <string name="favourite">Favourite</string>
+    <string name="details">Preview</string>
+    <string name="wallpaper_item" translatable="false">wallpaper photo</string>
+    <string name="favourite_item" translatable="false">Favourite</string>
+    <string name="share_item" translatable="false">Share</string>
+    <string name="download_item" translatable="false">Download</string>
+    <string name="information_item" translatable="false">Information</string>
 </resources>

@@ -11,7 +11,7 @@ import java.lang.reflect.Type;
 
 public class Converter {
 
-
+    // Two converter methods for Urls Class
     @TypeConverter
     public static Urls fromStringUrls(String value) {
         Type listType = new TypeToken<Urls>() {
@@ -26,7 +26,7 @@ public class Converter {
         return json;
     }
 
-
+    // Two converter methods for User Class
     @TypeConverter
     public static User fromStringUser(String value) {
         Type listType = new TypeToken<User>() {
@@ -40,5 +40,4 @@ public class Converter {
         String json = gson.toJson(list);
         return json;
     }
-
 }

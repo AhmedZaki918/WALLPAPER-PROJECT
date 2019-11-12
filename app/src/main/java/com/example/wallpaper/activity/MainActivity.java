@@ -1,5 +1,6 @@
 package com.example.wallpaper.activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -7,9 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -17,7 +23,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,8 +32,10 @@ import android.widget.Toast;
 import com.example.wallpaper.R;
 import com.example.wallpaper.adapter.Constants;
 import com.example.wallpaper.adapter.MainAdapter;
+import com.example.wallpaper.model.User;
 import com.example.wallpaper.model.Wallpapers;
 import com.example.wallpaper.network.APIClient;
+import com.example.wallpaper.widget.WallpaperWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,32 +54,43 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private List<Wallpapers> mWallpapers;
-
+    private List<User> mUserList;
     private ProgressBar mProgressBar;
     private TextView mEmptyView;
     private ImageView noWifiLogo;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Button refreshButton;
 
     // For retrieve scroll position of the RecyclerView
     private static int index = -1;
     private static int top = -1;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ImageButton refreshButton;
     NetworkInfo networkInfo;
+    ActionBar actionBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Change the default color of the action bar
+        actionBar = getSupportActionBar();
+        //Setting up Action bar color using # color code.
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+        }
+
+        // Find view by id
         mProgressBar = findViewById(R.id.loading_indicator);
         mEmptyView = findViewById(R.id.tv_empty_view);
         noWifiLogo = findViewById(R.id.iv_no_wifi);
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        refreshButton = findViewById(R.id.iv_refresh);
+        refreshButton = findViewById(R.id.btn_refresh);
 
         // Find a reference to the following
         mWallpapers = new ArrayList<>();
+        mUserList = new ArrayList<>();
         mRecyclerView = findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -80,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
         haveStoragePermission();
         getWallpapers();
 
+        // Swipe to refresh the data coming from the server
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
 
+                // Check the current state of the network
                 checkConnection();
 
                 // If there is a network connection, fetch data
@@ -94,10 +115,12 @@ public class MainActivity extends AppCompatActivity {
                     noWifiLogo.setVisibility(View.GONE);
                     refreshButton.setVisibility(View.GONE);
 
+                    // Calling the method
                     getWallpapers();
                     mSwipeRefreshLayout.setRefreshing(false);
 
                 } else {
+                    // If there is no network connection
                     mSwipeRefreshLayout.setRefreshing(false);
                     mRecyclerView.setVisibility(View.GONE);
                     mEmptyView.setVisibility(View.VISIBLE);
@@ -106,10 +129,10 @@ public class MainActivity extends AppCompatActivity {
                     refreshButton.setVisibility(View.VISIBLE);
                     noWifiLogo.setImageResource(R.drawable.no_signal);
                 }
-
             }
         });
 
+        // Button to retry to fetch data from the server in case of (Connection lost)
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,8 +146,9 @@ public class MainActivity extends AppCompatActivity {
                     noWifiLogo.setVisibility(View.GONE);
                     refreshButton.setVisibility(View.GONE);
                     getWallpapers();
-                } else {
 
+                } else {
+                    // If there is no network connection
                     mEmptyView.setText(R.string.no_internet);
                     noWifiLogo.setVisibility(View.VISIBLE);
                     noWifiLogo.setImageResource(R.drawable.no_signal);
@@ -167,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Displays wallpapers on the main activity
+    // Displays wallpapers on the main activity by Retrofit library
     private void getWallpapers() {
         // String variable to store Api key
         String apiKey = Constants.API_KEY;
@@ -183,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter = new MainAdapter(MainActivity.this, mWallpapers);
                 mRecyclerView.setHasFixedSize(true);
                 mRecyclerView.setAdapter(mAdapter);
+
+                // Run the widget
+                runWidget();
             }
 
             @Override
@@ -214,12 +241,47 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Check internet connection
+    // Check the state of internet connection
     private void checkConnection() {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         // Get details on the currently active default data network
         networkInfo = connMgr.getActiveNetworkInfo();
+    }
+
+
+    // Run widget
+    private void runWidget() {
+        ArrayList<String> InPref = fillRow(mUserList);
+        setPreferences("photographers", InPref, MainActivity.this);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(MainActivity.this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                new ComponentName(MainActivity.this, WallpaperWidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
+        WallpaperWidgetProvider.updateAppWidget(MainActivity.this, appWidgetManager, appWidgetIds);
+//        Toast.makeText(this, "widget is running", Toast.LENGTH_SHORT).show();
+    }
+
+
+    // Setup preferences for widget
+    private void setPreferences(String arrayName, ArrayList<String> array, Context mContext) {
+        SharedPreferences prefs = mContext.getSharedPreferences("appWidget", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(arrayName + "_size", array.size());
+        for (int i = 0; i < array.size(); i++)
+            editor.putString(arrayName + "_" + i, array.get(i));
+        editor.apply();
+    }
+
+    // Draw the layout of the row
+    private ArrayList<String> fillRow(List<User> userList) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (int i = 0; i < userList.size(); i++) {
+            String row = userList.get(i).getmName();
+            arrayList.add(row);
+        }
+        return arrayList;
     }
 }

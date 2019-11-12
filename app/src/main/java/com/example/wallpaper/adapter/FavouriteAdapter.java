@@ -94,19 +94,34 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
                 mContext.startActivity(intent);
             }
         });
-
     }
 
+    /**
+     * This method simply returns the number of items to display. It is used behind the scenes
+     * to help layout our Views and for animations.
+     *
+     * @return The number of items available in our wallpapers
+     */
     @Override
     public int getItemCount() {
         return mWallpapers != null ? mWallpapers.size() : 0;
-
     }
 
+    /**
+     * Cache of the children views for a list item.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        // Initialize the view
         private ImageView mWallpaper;
 
+        /**
+         * Constructor for our ViewHolder. Within this constructor, we get a reference to our
+         * ImageView
+         *
+         * @param itemView The View that you inflated in
+         *                 {@link FavouriteAdapter#onCreateViewHolder(ViewGroup, int)}
+         */
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mWallpaper = itemView.findViewById(R.id.iv_image);

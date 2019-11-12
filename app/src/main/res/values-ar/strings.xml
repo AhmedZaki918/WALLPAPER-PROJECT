@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">الخلفيات</string>
+    <string name="download_complete">التحميل اكتمل</string>
+    <string name="downloading">جارى التحميل</string>
+    <string name="no_internet">فشل فى الاتصال</string>
+    <string name="photo_label">صورة بواسطة</string>
+    <string name="preview_quality">جودة المعاينة</string>
+    <string name="retry">اعادة</string>
+    <string name="settings_menu_item">الاعدادات</string>
+    <string name="website_label">من انسبلاش</string>
+    <string name="added_to_favou">اضافة الى المفضلة</string>
+    <string name="removed_favou">ازالة من المفضلة</string>
+    <string name="cancel">الغاء</string>
+    <string name="favourite">المفضلة</string>
+    <string name="details">معاينة</string>
+    <string name="caption_quality">جودة المعاينة بعرض 1080 بكسل. اذا أردت الحجم الاصلى لابد ان تحمل الصورة</string>
+
+</resources>

@@ -2,6 +2,7 @@ package com.example.wallpaper.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -9,6 +10,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.example.wallpaper.R;
@@ -29,16 +32,24 @@ public class FavouriteActivity extends AppCompatActivity {
     private StaggeredGridLayoutManager mLayoutManager;
     private AppDatabase mDb;
 
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
 
+        // Change the default color of the action bar
+        actionBar = getSupportActionBar();
+        //Setting up Action bar color using # color code.
+        if (actionBar != null) {
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+        }
+
         // Find a reference to the following
         mDb = AppDatabase.getInstance(getApplicationContext());
         mRecyclerView = findViewById(R.id.recycler_view);
-        mLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mFavouriteAdapter = new FavouriteAdapter(FavouriteActivity.this);
 
         // Set layout manager and RecyclerView
@@ -48,7 +59,7 @@ public class FavouriteActivity extends AppCompatActivity {
         // Bind the Adapter to RecyclerView
         mRecyclerView.setAdapter(mFavouriteAdapter);
 
-
+        // Swipe to delete selected wallpaper from the database
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
@@ -72,7 +83,7 @@ public class FavouriteActivity extends AppCompatActivity {
         }).attachToRecyclerView(mRecyclerView);
 
 
-
+        // Calling the method
         setupViewModel();
     }
 
