@@ -86,6 +86,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+
         // Change the default color of the action bar
         actionBar = getSupportActionBar();
         //Setting up Action bar color using # color code.

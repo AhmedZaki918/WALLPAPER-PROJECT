@@ -36,6 +36,9 @@ import com.example.wallpaper.model.User;
 import com.example.wallpaper.model.Wallpapers;
 import com.example.wallpaper.network.APIClient;
 import com.example.wallpaper.widget.WallpaperWidgetProvider;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,12 +70,25 @@ public class MainActivity extends AppCompatActivity {
 
     NetworkInfo networkInfo;
     ActionBar actionBar;
+    AdView adView;
 
+    FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        // Setup for Google ads
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        adView.loadAd(adRequest);
 
         // Change the default color of the action bar
         actionBar = getSupportActionBar();
