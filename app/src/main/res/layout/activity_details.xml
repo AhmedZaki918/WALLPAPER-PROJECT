@@ -8,9 +8,15 @@
     android:background="@color/black"
     tools:mContext=".activity.DetailsActivity">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar" />
 
 
         <ImageView
@@ -21,9 +27,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
             tools:srcCompat="@tools:sample/avatars" />
-
 
         <TextView
             android:id="@+id/tv_photo_label"

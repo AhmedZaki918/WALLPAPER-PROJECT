@@ -2,6 +2,7 @@ package com.example.wallpaper.activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private static int top = -1;
 
     NetworkInfo networkInfo;
-    ActionBar actionBar;
     AdView adView;
+
 
     FirebaseAnalytics mFirebaseAnalytics;
 
@@ -78,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
         // Obtain the FirebaseAnalytics instance.
@@ -89,13 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         adView.loadAd(adRequest);
-
-        // Change the default color of the action bar
-        actionBar = getSupportActionBar();
-        //Setting up Action bar color using # color code.
-        if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
-        }
 
         // Find view by id
         mProgressBar = findViewById(R.id.loading_indicator);
@@ -120,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
 
-                // Check the current state of the network
+                // First check the current state of the network
                 checkConnection();
 
                 // If there is a network connection, fetch data

@@ -2,6 +2,7 @@ package com.example.wallpaper.activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import android.app.DownloadManager;
@@ -15,6 +16,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -86,13 +89,14 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        // Change the default color of the action bar
         actionBar = getSupportActionBar();
-        //Setting up Action bar color using # color code.
         if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#000000")));
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
 
         // Prepare the code to use ButterKnife library
         ButterKnife.bind(this);
@@ -172,7 +176,7 @@ public class DetailsActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    // Method to download the image
+    // Method to download the photo
     private void downloadImage(String URL) {
         File direct = new File(Environment.getExternalStorageDirectory()
                 + "/WallpaperImages");
@@ -219,7 +223,8 @@ public class DetailsActivity extends AppCompatActivity {
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
         try {
-            File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                    "share_image_" + System.currentTimeMillis() + ".png");
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close();
@@ -242,15 +247,14 @@ public class DetailsActivity extends AppCompatActivity {
                 public void run() {
                     // Insert the selected move to the database
                     mDb.wallpaperDao().insertWallpaper(wallpapers);
-
-                    favouriteButton.setImageResource(R.drawable.baseline_favorite_white_24);
-
-                    Snackbar snackbar = Snackbar
-                            .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-
                 }
             });
+
+            favouriteButton.setImageResource(R.drawable.baseline_favorite_white_24);
+
+            Snackbar snackbar = Snackbar
+                    .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
+            snackbar.show();
 
             index++;
         } else {
@@ -261,15 +265,14 @@ public class DetailsActivity extends AppCompatActivity {
                 public void run() {
                     // Delete the selected move by it's position
                     mDb.wallpaperDao().deleteWallpaper(wallpapers);
-
-                    favouriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24);
-
-                    Snackbar snackbar = Snackbar
-                            .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);
-                    snackbar.show();
-
                 }
             });
+
+            favouriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24);
+
+            Snackbar snackbar = Snackbar
+                    .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);
+            snackbar.show();
             index = 0;
         }
     }
