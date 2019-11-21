@@ -9,16 +9,14 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -59,10 +57,17 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView shareButton;
     @BindView(R.id.iv_info)
     ImageView infoButton;
-    @BindView(R.id.iv_favourite)
-    ImageView favouriteButton;
+    @BindView(R.id.ch_favourite)
+    CheckBox favouriteButton;
     @BindView(R.id.scroll_view)
     ScrollView scrollView;
+
+    // variables for SharedPreferences
+    private SharedPreferences StatePreferences;
+    private SharedPreferences.Editor StatePrefsEditor;
+    private Boolean State;
+    private String photoId;
+
 
     // Create BroadcastReceiver object
     CustomBroadcastReceiver broadcastReceiver;
@@ -80,14 +85,13 @@ public class DetailsActivity extends AppCompatActivity {
     // Member variable for the Database
     private AppDatabase mDb;
 
-    // Int variable to switch between favourite case and vice versa
-    private int index = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+        ButterKnife.bind(this);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,9 +101,6 @@ public class DetailsActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-
-        // Prepare the code to use ButterKnife library
-        ButterKnife.bind(this);
 
         // Find a reference to the AppDatabase class
         mDb = AppDatabase.getInstance(getApplicationContext());
@@ -155,6 +156,16 @@ public class DetailsActivity extends AppCompatActivity {
                 saveWallpaper();
             }
         });
+
+
+        // To save the state of CheckBox Favourite button (Check And UnChecked)
+        StatePreferences = getSharedPreferences("ChkPrefs", MODE_PRIVATE);
+        StatePrefsEditor = StatePreferences.edit();
+        State = StatePreferences.getBoolean("CheckState", false);
+        photoId = StatePreferences.getString("photoId", "id");
+        if (State && photoId == wallpapers.getId()) {
+            favouriteButton.setChecked(true);
+        }
     }
 
     // Method to open alert dialog
@@ -239,8 +250,7 @@ public class DetailsActivity extends AppCompatActivity {
     // Save the wallpaper in the favourites
     private void saveWallpaper() {
 
-        if (index == 0) {
-
+        if (favouriteButton.isChecked()) {
             // Save wallpaper in the database
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
@@ -250,15 +260,17 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             });
 
-            favouriteButton.setImageResource(R.drawable.baseline_favorite_white_24);
+            // Shared prefs
+            StatePrefsEditor.putBoolean("CheckState", true);
+            StatePrefsEditor.putString("photoId", wallpapers.getId());
+            StatePrefsEditor.commit();
 
+            // SnackBar
             Snackbar snackbar = Snackbar
                     .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
             snackbar.show();
 
-            index++;
         } else {
-
             // Remove wallpaper from the database
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
@@ -268,12 +280,15 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             });
 
-            favouriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24);
+            // Shared prefs
+            StatePrefsEditor.putBoolean("CheckState", false);
+            StatePrefsEditor.putString("photoId", "id");
+            StatePrefsEditor.commit();
 
+            // SnackBar
             Snackbar snackbar = Snackbar
                     .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);
             snackbar.show();
-            index = 0;
         }
     }
 }

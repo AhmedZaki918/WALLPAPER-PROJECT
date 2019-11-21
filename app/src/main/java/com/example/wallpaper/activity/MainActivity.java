@@ -1,6 +1,5 @@
 package com.example.wallpaper.activity;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -15,8 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -33,7 +30,6 @@ import android.widget.Toast;
 import com.example.wallpaper.R;
 import com.example.wallpaper.adapter.Constants;
 import com.example.wallpaper.adapter.MainAdapter;
-import com.example.wallpaper.model.User;
 import com.example.wallpaper.model.Wallpapers;
 import com.example.wallpaper.network.APIClient;
 import com.example.wallpaper.widget.WallpaperWidgetProvider;
@@ -44,6 +40,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,22 +53,32 @@ public class MainActivity extends AppCompatActivity {
      * Initialize the variables
      */
     private MainAdapter mAdapter;
-    private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private List<Wallpapers> mWallpapers;
-    private List<User> mUserList;
-    private ProgressBar mProgressBar;
-    private TextView mEmptyView;
-    private ImageView noWifiLogo;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Button refreshButton;
+
+    @BindView(R.id.iv_no_wifi)
+    ImageView noWifiLogo;
+    @BindView(R.id.loading_indicator)
+    ProgressBar mProgressBar;
+    @BindView(R.id.tv_empty_view)
+    TextView mEmptyView;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.btn_refresh)
+    Button refreshButton;
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.adView)
+    AdView adView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
 
     // For retrieve scroll position of the RecyclerView
     private static int index = -1;
     private static int top = -1;
 
     NetworkInfo networkInfo;
-    AdView adView;
 
 
     FirebaseAnalytics mFirebaseAnalytics;
@@ -79,33 +87,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        // Setup for Google ads
-        adView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        adView.loadAd(adRequest);
+//        // Setup for Google ads
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .build();
+//        adView.loadAd(adRequest);
 
-        // Find view by id
-        mProgressBar = findViewById(R.id.loading_indicator);
-        mEmptyView = findViewById(R.id.tv_empty_view);
-        noWifiLogo = findViewById(R.id.iv_no_wifi);
-        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        refreshButton = findViewById(R.id.btn_refresh);
 
         // Find a reference to the following
         mWallpapers = new ArrayList<>();
-        mUserList = new ArrayList<>();
-        mRecyclerView = findViewById(R.id.recycler_view);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -166,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     mEmptyView.setText(R.string.no_internet);
                     noWifiLogo.setVisibility(View.VISIBLE);
                     noWifiLogo.setImageResource(R.drawable.no_signal);
-                    Toast.makeText(MainActivity.this, "Connection lost", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.no_internet, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -267,7 +264,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Run widget
     private void runWidget() {
-        ArrayList<String> InPref = fillRow(mUserList);
+
+        ArrayList<String> InPref = fillRow(mWallpapers);
+
         setPreferences("photographers", InPref, MainActivity.this);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(MainActivity.this);
@@ -275,7 +274,6 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(MainActivity.this, WallpaperWidgetProvider.class));
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
         WallpaperWidgetProvider.updateAppWidget(MainActivity.this, appWidgetManager, appWidgetIds);
-//        Toast.makeText(this, "widget is running", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -290,10 +288,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Draw the layout of the row
-    private ArrayList<String> fillRow(List<User> userList) {
+    private ArrayList<String> fillRow(List<Wallpapers> userList) {
         ArrayList<String> arrayList = new ArrayList<>();
         for (int i = 0; i < userList.size(); i++) {
-            String row = userList.get(i).getmName();
+            String row = "Photo by " + userList.get(i).user.getmName();
             arrayList.add(row);
         }
         return arrayList;

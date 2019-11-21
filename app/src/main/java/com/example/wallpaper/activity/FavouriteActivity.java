@@ -24,26 +24,33 @@ import com.example.wallpaper.model.Wallpapers;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class FavouriteActivity extends AppCompatActivity {
 
 
     // Initialize variables
-    private RecyclerView mRecyclerView;
     private FavouriteAdapter mFavouriteAdapter;
     private StaggeredGridLayoutManager mLayoutManager;
     private AppDatabase mDb;
-
     ActionBar actionBar;
+
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourite);
+        ButterKnife.bind(this);
 
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        // Run toolbar
         setSupportActionBar(toolbar);
 
+        // Display up button in actionbar
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -51,7 +58,6 @@ public class FavouriteActivity extends AppCompatActivity {
 
         // Find a reference to the following
         mDb = AppDatabase.getInstance(getApplicationContext());
-        mRecyclerView = findViewById(R.id.recycler_view);
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mFavouriteAdapter = new FavouriteAdapter(FavouriteActivity.this);
 
