@@ -212,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Wallpapers>> call, Response<List<Wallpapers>> response) {
 
-                mProgressBar.setVisibility(View.GONE);
 
+                mProgressBar.setVisibility(View.GONE);
                 mWallpapers = response.body();
                 mAdapter = new MainAdapter(MainActivity.this, mWallpapers);
                 mRecyclerView.setHasFixedSize(true);

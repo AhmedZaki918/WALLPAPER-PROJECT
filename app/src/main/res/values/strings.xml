@@ -22,4 +22,5 @@
     <string name="download_item" translatable="false">Download</string>
     <string name="information_item" translatable="false">Information</string>
     <string name="latest_wallpapers">Latest wallpapers</string>
+    <string name="error_in_server">Error in server</string>
 </resources>

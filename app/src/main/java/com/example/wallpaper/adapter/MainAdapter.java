@@ -2,11 +2,12 @@ package com.example.wallpaper.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,8 +43,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
      * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
      *
-     * @param parent The ViewGroup that these ViewHolders are contained within.
-     * @param viewType  Id for the list item layout
+     * @param parent   The ViewGroup that these ViewHolders are contained within.
+     * @param viewType Id for the list item layout
      * @return A new ViewHolder that holds the View for each list item
      */
     @NonNull
@@ -73,12 +74,19 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
         // String variable to get url of the picture
         String picUrl = currentItem.urls.getmRegular();
 
-        // Set the given text on the view
-        holder.mPhotographer.setText(currentItem.user.getmName());
-
-        // Display the image by Picasso library
-        Picasso.with(mContext).load(picUrl)
-                .into(holder.mWallpaper);
+        // Validates all input from servers at first
+        if (picUrl.equals("")) {
+            // Create toast message
+            Toast toast = Toast.makeText(mContext, R.string.error_in_server, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+            // Set alternative image
+            holder.mWallpaper.setImageResource(R.drawable.error_server);
+        } else {
+            // Display the image by Picasso library
+            Picasso.with(mContext).load(picUrl)
+                    .into(holder.mWallpaper);
+        }
 
         // Set on click listener on the view
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -110,11 +118,10 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         // Initialize the views
         private ImageView mWallpaper;
-        private TextView mPhotographer;
 
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
-         * TextView and ImageView
+         * ImageView
          *
          * @param itemView The View that you inflated in
          *                 {@link MainAdapter#onCreateViewHolder(ViewGroup, int)}
@@ -123,7 +130,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             super(itemView);
             // Find a reference to the views
             mWallpaper = itemView.findViewById(R.id.iv_picture);
-            mPhotographer = itemView.findViewById(R.id.tv_photographer);
         }
     }
 }
