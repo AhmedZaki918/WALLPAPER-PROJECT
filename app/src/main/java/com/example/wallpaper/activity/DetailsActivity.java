@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class DetailsActivity extends AppCompatActivity {
@@ -61,12 +62,15 @@ public class DetailsActivity extends AppCompatActivity {
     CheckBox favouriteButton;
     @BindView(R.id.scroll_view)
     ScrollView scrollView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
 
     // variables for SharedPreferences
-    private SharedPreferences StatePreferences;
-    private SharedPreferences.Editor StatePrefsEditor;
-    private Boolean State;
-    private String photoId;
+    private SharedPreferences mStatePreferences;
+    private SharedPreferences.Editor mStatePrefsEditor;
+    private Boolean mState;
+    private String mPhotoId;
 
 
     // Create BroadcastReceiver object
@@ -85,6 +89,8 @@ public class DetailsActivity extends AppCompatActivity {
     // Member variable for the Database
     private AppDatabase mDb;
 
+    PhotoViewAttacher photoView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,15 +98,12 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
 
         // Find a reference to the AppDatabase class
         mDb = AppDatabase.getInstance(getApplicationContext());
@@ -120,6 +123,10 @@ public class DetailsActivity extends AppCompatActivity {
 
         // Display the poster of the selected movie By Picasso library
         Picasso.with(this).load(mRegularDimensionImage).into(picture);
+
+        // Double click to zoom on the photo
+        photoView = new PhotoViewAttacher(picture);
+        photoView.update();
 
         // Pass the given text by intent and display it in the TextView
         photographer.setText(mPhotographer);
@@ -158,12 +165,12 @@ public class DetailsActivity extends AppCompatActivity {
         });
 
 
-        // To save the state of CheckBox Favourite button (Check And UnChecked)
-        StatePreferences = getSharedPreferences("ChkPrefs", MODE_PRIVATE);
-        StatePrefsEditor = StatePreferences.edit();
-        State = StatePreferences.getBoolean("CheckState", false);
-        photoId = StatePreferences.getString("photoId", "id");
-        if (State && photoId == wallpapers.getId()) {
+        // To save the mState of CheckBox Favourite button (Check And UnChecked)
+        mStatePreferences = getSharedPreferences("ChkPrefs", MODE_PRIVATE);
+        mStatePrefsEditor = mStatePreferences.edit();
+        mState = mStatePreferences.getBoolean("CheckState", false);
+        mPhotoId = mStatePreferences.getString("mPhotoId", "id");
+        if (mState && mPhotoId == wallpapers.getId()) {
             favouriteButton.setChecked(true);
         }
     }
@@ -261,9 +268,10 @@ public class DetailsActivity extends AppCompatActivity {
             });
 
             // Shared prefs
-            StatePrefsEditor.putBoolean("CheckState", true);
-            StatePrefsEditor.putString("photoId", wallpapers.getId());
-            StatePrefsEditor.commit();
+            mStatePrefsEditor.putBoolean("CheckState", true);
+            mStatePrefsEditor.putString("mPhotoId", wallpapers.getId());
+            mStatePrefsEditor.commit();
+
 
             // SnackBar
             Snackbar snackbar = Snackbar
@@ -281,9 +289,9 @@ public class DetailsActivity extends AppCompatActivity {
             });
 
             // Shared prefs
-            StatePrefsEditor.putBoolean("CheckState", false);
-            StatePrefsEditor.putString("photoId", "id");
-            StatePrefsEditor.commit();
+            mStatePrefsEditor.putBoolean("CheckState", false);
+            mStatePrefsEditor.putString("mPhotoId", "id");
+            mStatePrefsEditor.commit();
 
             // SnackBar
             Snackbar snackbar = Snackbar
