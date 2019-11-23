@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            storeFile file("$rootDir/keystore.jks")
-            storePassword 'password'
-            keyAlias = 'Ahmed'
-            keyPassword 'password'
+            storeFile file("$rootDir/storekey.jks")
+            storePassword '161290'
+            keyAlias = 'ahmed'
+            keyPassword '161290'
         }
     }
     compileSdkVersion 29
@@ -29,6 +29,11 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'UNSPLASH_API_KEY', API_KEY
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
