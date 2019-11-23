@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -72,14 +73,12 @@ public class DetailsActivity extends AppCompatActivity {
     private Boolean mState;
     private String mPhotoId;
 
-
     // Create BroadcastReceiver object
     CustomBroadcastReceiver broadcastReceiver;
     ActionBar actionBar;
 
     // Obj from model class
     Wallpapers wallpapers;
-
 
     // String variables to store the given value passed by the intent
     private String mRegularDimensionImage;
@@ -89,6 +88,7 @@ public class DetailsActivity extends AppCompatActivity {
     // Member variable for the Database
     private AppDatabase mDb;
 
+    // Variable for zooming in photo
     PhotoViewAttacher photoView;
 
 
@@ -170,8 +170,10 @@ public class DetailsActivity extends AppCompatActivity {
         mStatePrefsEditor = mStatePreferences.edit();
         mState = mStatePreferences.getBoolean("CheckState", false);
         mPhotoId = mStatePreferences.getString("mPhotoId", "id");
-        if (mState && mPhotoId == wallpapers.getId()) {
+        if (mState == true && mPhotoId == wallpapers.getId()) {
             favouriteButton.setChecked(true);
+            Log.e("DetailActivity", "STATE : " + mState);
+
         }
     }
 
@@ -253,7 +255,6 @@ public class DetailsActivity extends AppCompatActivity {
         return bmpUri;
     }
 
-
     // Save the wallpaper in the favourites
     private void saveWallpaper() {
 
@@ -271,7 +272,6 @@ public class DetailsActivity extends AppCompatActivity {
             mStatePrefsEditor.putBoolean("CheckState", true);
             mStatePrefsEditor.putString("mPhotoId", wallpapers.getId());
             mStatePrefsEditor.commit();
-
 
             // SnackBar
             Snackbar snackbar = Snackbar

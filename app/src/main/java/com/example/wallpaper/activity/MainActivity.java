@@ -73,14 +73,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-
     // For retrieve scroll position of the RecyclerView
     private static int index = -1;
     private static int top = -1;
 
     NetworkInfo networkInfo;
-
-
     FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
@@ -99,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         adView.loadAd(adRequest);
-
 
         // Find a reference to the following
         mWallpapers = new ArrayList<>();
@@ -212,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Wallpapers>> call, Response<List<Wallpapers>> response) {
 
-
                 mProgressBar.setVisibility(View.GONE);
                 mWallpapers = response.body();
                 mAdapter = new MainAdapter(MainActivity.this, mWallpapers);
@@ -230,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
                 refreshButton.setVisibility(View.VISIBLE);
                 noWifiLogo.setVisibility(View.VISIBLE);
                 noWifiLogo.setImageResource(R.drawable.no_signal);
-
             }
         });
     }
@@ -240,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -261,12 +254,9 @@ public class MainActivity extends AppCompatActivity {
         networkInfo = connMgr.getActiveNetworkInfo();
     }
 
-
     // Run widget
     private void runWidget() {
-
         ArrayList<String> InPref = fillRow(mWallpapers);
-
         setPreferences("photographers", InPref, MainActivity.this);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(MainActivity.this);
@@ -275,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
         WallpaperWidgetProvider.updateAppWidget(MainActivity.this, appWidgetManager, appWidgetIds);
     }
-
 
     // Setup preferences for widget
     private void setPreferences(String arrayName, ArrayList<String> array, Context mContext) {

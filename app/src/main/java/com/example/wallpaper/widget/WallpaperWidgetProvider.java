@@ -35,7 +35,6 @@ public class WallpaperWidgetProvider extends AppWidgetProvider {
         // There may be multiple widgets active, so update all of them
         updateAppWidget(context, appWidgetManager, appWidgetIds);
     }
-
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
@@ -46,4 +45,3 @@ public class WallpaperWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 }
-
