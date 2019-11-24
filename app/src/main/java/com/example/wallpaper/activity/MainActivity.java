@@ -107,60 +107,54 @@ public class MainActivity extends AppCompatActivity {
         getWallpapers();
 
         // Swipe to refresh the data coming from the server
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
 
-                // First check the current state of the network
-                checkConnection();
+            // First check the current state of the network
+            checkConnection();
 
-                // If there is a network connection, fetch data
-                if (networkInfo != null && networkInfo.isConnected()) {
+            // If there is a network connection, fetch data
+            if (networkInfo != null && networkInfo.isConnected()) {
 
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
-                    noWifiLogo.setVisibility(View.GONE);
-                    refreshButton.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+                mEmptyView.setVisibility(View.GONE);
+                noWifiLogo.setVisibility(View.GONE);
+                refreshButton.setVisibility(View.GONE);
 
-                    // Calling the method
-                    getWallpapers();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                // Calling the method
+                getWallpapers();
+                mSwipeRefreshLayout.setRefreshing(false);
 
-                } else {
-                    // If there is no network connection
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mRecyclerView.setVisibility(View.GONE);
-                    mEmptyView.setVisibility(View.VISIBLE);
-                    mEmptyView.setText(R.string.no_internet);
-                    noWifiLogo.setVisibility(View.VISIBLE);
-                    refreshButton.setVisibility(View.VISIBLE);
-                    noWifiLogo.setImageResource(R.drawable.no_signal);
-                }
+            } else {
+                // If there is no network connection
+                mSwipeRefreshLayout.setRefreshing(false);
+                mRecyclerView.setVisibility(View.GONE);
+                mEmptyView.setVisibility(View.VISIBLE);
+                mEmptyView.setText(R.string.no_internet);
+                noWifiLogo.setVisibility(View.VISIBLE);
+                refreshButton.setVisibility(View.VISIBLE);
+                noWifiLogo.setImageResource(R.drawable.no_signal);
             }
         });
 
         // Button to retry to fetch data from the server in case of (Connection lost)
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        refreshButton.setOnClickListener(view -> {
 
-                checkConnection();
-                // If there is a network connection, fetch data
-                if (networkInfo != null && networkInfo.isConnected()) {
+            checkConnection();
+            // If there is a network connection, fetch data
+            if (networkInfo != null && networkInfo.isConnected()) {
 
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
-                    noWifiLogo.setVisibility(View.GONE);
-                    refreshButton.setVisibility(View.GONE);
-                    getWallpapers();
+                mProgressBar.setVisibility(View.VISIBLE);
+                mEmptyView.setVisibility(View.GONE);
+                noWifiLogo.setVisibility(View.GONE);
+                refreshButton.setVisibility(View.GONE);
+                getWallpapers();
 
-                } else {
-                    // If there is no network connection
-                    mEmptyView.setText(R.string.no_internet);
-                    noWifiLogo.setVisibility(View.VISIBLE);
-                    noWifiLogo.setImageResource(R.drawable.no_signal);
-                    Toast.makeText(MainActivity.this, R.string.no_internet, Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                // If there is no network connection
+                mEmptyView.setText(R.string.no_internet);
+                noWifiLogo.setVisibility(View.VISIBLE);
+                noWifiLogo.setImageResource(R.drawable.no_signal);
+                Toast.makeText(MainActivity.this, R.string.no_internet, Toast.LENGTH_SHORT).show();
             }
         });
     }

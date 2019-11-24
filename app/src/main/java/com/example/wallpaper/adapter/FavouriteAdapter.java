@@ -85,14 +85,11 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
                 .into(holder.mWallpaper);
 
         // Set on click listener on the view
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Setup the intent to go to the DetailsActivity
-                Intent intent = new Intent(mContext, DetailsActivity.class);
-                intent.putExtra(Constants.INTENT_KEY, currentItem);
-                mContext.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            // Setup the intent to go to the DetailsActivity
+            Intent intent = new Intent(mContext, DetailsActivity.class);
+            intent.putExtra(Constants.INTENT_KEY, currentItem);
+            mContext.startActivity(intent);
         });
     }
 

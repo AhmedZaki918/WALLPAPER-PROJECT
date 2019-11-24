@@ -9,14 +9,12 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.view.View;
+import android.preference.PreferenceManager;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -66,10 +64,7 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-
     // variables for SharedPreferences
-    private SharedPreferences mStatePreferences;
-    private SharedPreferences.Editor mStatePrefsEditor;
     private Boolean mState;
     private String mPhotoId;
 
@@ -132,48 +127,30 @@ public class DetailsActivity extends AppCompatActivity {
         photographer.setText(mPhotographer);
 
         // Click listener to download the image
-        downloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                downloadImage(mHighDimensionImage);
-                Toast.makeText(DetailsActivity.this, R.string.downloading, Toast.LENGTH_SHORT).show();
-            }
+        downloadButton.setOnClickListener(view -> {
+            downloadImage(mHighDimensionImage);
+            Toast.makeText(DetailsActivity.this, R.string.downloading, Toast.LENGTH_SHORT).show();
         });
 
         // Click listener to share the image
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                shareImage(mRegularDimensionImage);
-            }
-        });
+        shareButton.setOnClickListener(view -> shareImage(mRegularDimensionImage));
 
         // Click listener on info button
-        infoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openDialog();
-            }
-        });
+        infoButton.setOnClickListener(view -> openDialog());
 
         // Click listener on favourite button
-        favouriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveWallpaper();
-            }
-        });
+        favouriteButton.setOnClickListener(view -> saveWallpaper());
 
-
-        // To save the mState of CheckBox Favourite button (Check And UnChecked)
-        mStatePreferences = getSharedPreferences("ChkPrefs", MODE_PRIVATE);
-        mStatePrefsEditor = mStatePreferences.edit();
-        mState = mStatePreferences.getBoolean("CheckState", false);
-        mPhotoId = mStatePreferences.getString("mPhotoId", "id");
-        if (mState == true && mPhotoId == wallpapers.getId()) {
-            favouriteButton.setChecked(true);
-            Log.e("DetailActivity", "STATE : " + mState);
-
+        // To save the state of CheckBox Favourite button (Check And UnChecked)
+        // Save the boolean state
+        mState = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("checkBox1", false);
+        // Save the id of photo
+        mPhotoId = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("mPhotoId", "id");
+        // If id equals to mPhotoId, save the state of checkbox
+        if (mPhotoId.equals(wallpapers.getId())) {
+            favouriteButton.setChecked(mState);
         }
     }
 
@@ -257,22 +234,18 @@ public class DetailsActivity extends AppCompatActivity {
 
     // Save the wallpaper in the favourites
     private void saveWallpaper() {
+        // Store the state of checkbox in variable
+        mState = favouriteButton.isChecked();
 
-        if (favouriteButton.isChecked()) {
+        if (mState) {
             // Save wallpaper in the database
-            AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    // Insert the selected move to the database
-                    mDb.wallpaperDao().insertWallpaper(wallpapers);
-                }
+            AppExecutors.getInstance().diskIO().execute(() -> {
+                // Insert the selected move to the database
+                mDb.wallpaperDao().insertWallpaper(wallpapers);
             });
-
-            // Shared prefs
-            mStatePrefsEditor.putBoolean("CheckState", true);
-            mStatePrefsEditor.putString("mPhotoId", wallpapers.getId());
-            mStatePrefsEditor.commit();
-
+            // Save the state of checkBox
+            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean("checkBox1", mState).putString("mPhotoId", wallpapers.getId()).apply();
             // SnackBar
             Snackbar snackbar = Snackbar
                     .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
@@ -280,19 +253,13 @@ public class DetailsActivity extends AppCompatActivity {
 
         } else {
             // Remove wallpaper from the database
-            AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    // Delete the selected move by it's position
-                    mDb.wallpaperDao().deleteWallpaper(wallpapers);
-                }
+            AppExecutors.getInstance().diskIO().execute(() -> {
+                // Delete the selected move by it's position
+                mDb.wallpaperDao().deleteWallpaper(wallpapers);
             });
-
-            // Shared prefs
-            mStatePrefsEditor.putBoolean("CheckState", false);
-            mStatePrefsEditor.putString("mPhotoId", "id");
-            mStatePrefsEditor.commit();
-
+            // Don't save the state of checkBox
+            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean("checkBox1", mState).putString("mPhotoId", "id").apply();
             // SnackBar
             Snackbar snackbar = Snackbar
                     .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);

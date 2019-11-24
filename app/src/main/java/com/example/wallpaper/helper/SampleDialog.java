@@ -18,11 +18,8 @@ public class SampleDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.preview_quality)
                 .setMessage(R.string.caption_quality)
-                .setPositiveButton((R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                .setPositiveButton((R.string.cancel), (dialogInterface, i) -> {
 
-                    }
                 });
 
         return builder.create();

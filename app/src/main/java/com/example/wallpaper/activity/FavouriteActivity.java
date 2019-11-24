@@ -1,11 +1,9 @@
 package com.example.wallpaper.activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,15 +73,12 @@ public class FavouriteActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int position = viewHolder.getAdapterPosition();
-                        List<Wallpapers> wallpapers = mFavouriteAdapter.getmWallpapers();
-                        // Call deleteMovie in the movieDao at that position
-                        mDb.wallpaperDao().deleteWallpaper(wallpapers.get(position));
+                AppExecutors.getInstance().diskIO().execute(() -> {
+                    int position = viewHolder.getAdapterPosition();
+                    List<Wallpapers> wallpapers = mFavouriteAdapter.getmWallpapers();
+                    // Call deleteMovie in the movieDao at that position
+                    mDb.wallpaperDao().deleteWallpaper(wallpapers.get(position));
 
-                    }
                 });
 
             }
@@ -97,11 +92,6 @@ public class FavouriteActivity extends AppCompatActivity {
     // The operation of the ViewModel
     public void setupViewModel() {
         MainViewModel viewModel = ViewModelProviders.of(FavouriteActivity.this).get(MainViewModel.class);
-        viewModel.getWallpaperData().observe(FavouriteActivity.this, new Observer<List<Wallpapers>>() {
-            @Override
-            public void onChanged(@Nullable List<Wallpapers> movieData) {
-                mFavouriteAdapter.setmWallpapers(movieData);
-            }
-        });
+        viewModel.getWallpaperData().observe(FavouriteActivity.this, movieData -> mFavouriteAdapter.setmWallpapers(movieData));
     }
 }
