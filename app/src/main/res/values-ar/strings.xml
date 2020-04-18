@@ -3,7 +3,7 @@
     <string name="app_name">الخلفيات</string>
     <string name="download_complete">التحميل اكتمل</string>
     <string name="downloading">جارى التحميل</string>
-    <string name="no_internet">فشل فى الاتصال</string>
+    <string name="connection_lost">فشل فى الاتصال</string>
     <string name="photo_label">صورة بواسطة</string>
     <string name="preview_quality">جودة المعاينة</string>
     <string name="retry">اعادة</string>
@@ -15,5 +15,11 @@
     <string name="favourite">المفضلة</string>
     <string name="details">معاينة</string>
     <string name="caption_quality">جودة المعاينة بعرض 1080 بكسل. اذا أردت الحجم الاصلى لابد ان تحمل الصورة</string>
+    <string name="deleteOpe">الحذف</string>
+    <string name="caption_delete">حرك الصورة يمينا أو يسارا للحذف</string>
+    <string name="see_list">افتح المفضلة</string>
+    <string name="no_internet">تم فقد الاتصال بالانترنت، افحص الشبكة ثم حاول مرة اخرى</string>
+    <string name="appwidget_text">الخلفيات</string>
+    <string name="error_in_server">خطأ فى الخادم</string>
 
 </resources>

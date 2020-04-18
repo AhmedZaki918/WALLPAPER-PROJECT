@@ -13,7 +13,7 @@ import java.util.List;
 public class ListViewsService implements RemoteViewsService.RemoteViewsFactory {
 
 
-    Context context;
+    private Context context;
     private List<String> mPhotographerInPref;
 
     public ListViewsService(Context context) {
@@ -28,7 +28,7 @@ public class ListViewsService implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-        mPhotographerInPref = getPrefs("photographers", context);
+        mPhotographerInPref = getPrefs(context);
     }
 
     @Override
@@ -74,12 +74,18 @@ public class ListViewsService implements RemoteViewsService.RemoteViewsFactory {
     }
 
 
-    private ArrayList<String> getPrefs(String arrayName, Context mContext) {
+    /**
+     * Get preferences
+     *
+     * @param mContext is the context of the app
+     * @return String array
+     */
+    private ArrayList<String> getPrefs(Context mContext) {
         SharedPreferences prefs = mContext.getSharedPreferences("appWidget", 0);
-        int size = prefs.getInt(arrayName + "_size", 0);
+        int size = prefs.getInt("photographers" + "_size", 0);
         ArrayList<String> array = new ArrayList<>(size);
         for (int i = 0; i < size; i++)
-            array.add(prefs.getString(arrayName + "_" + i, null));
+            array.add(prefs.getString("photographers" + "_" + i, null));
         return array;
     }
 }

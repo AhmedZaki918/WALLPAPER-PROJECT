@@ -2,12 +2,12 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/widget_item"
-    android:textColor="@color/black"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:fontFamily="serif"
     android:gravity="center"
-    android:textStyle="italic"
+    android:textColor="@color/black"
     tools:text="photographer name">
 
 </TextView>

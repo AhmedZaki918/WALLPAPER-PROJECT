@@ -32,7 +32,10 @@ public class Urls implements Parcelable {
         }
     };
 
-    // Getters methods
+
+    /**
+     * Getters
+     */
     public String getmFull() {
         return mFull;
     }

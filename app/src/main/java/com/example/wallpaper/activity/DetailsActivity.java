@@ -1,6 +1,7 @@
 package com.example.wallpaper.activity;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
@@ -10,11 +11,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
+
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -26,7 +31,6 @@ import com.example.wallpaper.database.AppDatabase;
 import com.example.wallpaper.database.AppExecutors;
 import com.example.wallpaper.helper.CustomBroadcastReceiver;
 import com.example.wallpaper.R;
-import com.example.wallpaper.helper.SampleDialog;
 import com.example.wallpaper.adapter.Constants;
 import com.example.wallpaper.model.Wallpapers;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,7 +46,7 @@ import butterknife.ButterKnife;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * Initialize the variables
@@ -61,23 +65,23 @@ public class DetailsActivity extends AppCompatActivity {
     CheckBox favouriteButton;
     @BindView(R.id.scroll_view)
     ScrollView scrollView;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbar_favourite)
     Toolbar toolbar;
 
     // variables for SharedPreferences
     private Boolean mState;
-    private String mPhotoId;
+    String mPhotoId;
 
     // Create BroadcastReceiver object
-    CustomBroadcastReceiver broadcastReceiver;
+    private CustomBroadcastReceiver broadcastReceiver;
     ActionBar actionBar;
 
     // Obj from model class
-    Wallpapers wallpapers;
+    private Wallpapers wallpapers;
 
     // String variables to store the given value passed by the intent
     private String mRegularDimensionImage;
-    private String mPhotographer;
+    String mPhotographer;
     private String mHighDimensionImage;
 
     // Member variable for the Database
@@ -93,31 +97,32 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
+        // Setup for action bar
         setSupportActionBar(toolbar);
-
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        // Find a reference to the AppDatabase class
+        // Find a reference to the following
         mDb = AppDatabase.getInstance(getApplicationContext());
+        broadcastReceiver = new CustomBroadcastReceiver();
 
         // Prepare the intent to use it
         Intent intent = getIntent();
         // Get the data from the model class
         wallpapers = intent.getParcelableExtra(Constants.INTENT_KEY);
 
-        // Reference to BroadcastReceiver
-        broadcastReceiver = new CustomBroadcastReceiver();
-
         // Get all fields we need to show them in that activity By Intent
+        assert wallpapers != null;
         mRegularDimensionImage = wallpapers.urls.getmRegular();
         mHighDimensionImage = wallpapers.urls.getmFull();
         mPhotographer = wallpapers.user.getmName();
 
-        // Display the poster of the selected movie By Picasso library
-        Picasso.with(this).load(mRegularDimensionImage).into(picture);
+        // Display the image By Picasso library
+        Picasso.with(this)
+                .load(mRegularDimensionImage)
+                .into(picture);
 
         // Double click to zoom on the photo
         photoView = new PhotoViewAttacher(picture);
@@ -126,20 +131,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Pass the given text by intent and display it in the TextView
         photographer.setText(mPhotographer);
 
-        // Click listener to download the image
-        downloadButton.setOnClickListener(view -> {
-            downloadImage(mHighDimensionImage);
-            Toast.makeText(DetailsActivity.this, R.string.downloading, Toast.LENGTH_SHORT).show();
-        });
-
-        // Click listener to share the image
-        shareButton.setOnClickListener(view -> shareImage(mRegularDimensionImage));
-
-        // Click listener on info button
-        infoButton.setOnClickListener(view -> openDialog());
-
-        // Click listener on favourite button
-        favouriteButton.setOnClickListener(view -> saveWallpaper());
+        // Click listener on views
+        downloadButton.setOnClickListener(this);
+        shareButton.setOnClickListener(this);
+        infoButton.setOnClickListener(this);
+        favouriteButton.setOnClickListener(this);
 
         // To save the state of CheckBox Favourite button (Check And UnChecked)
         // Save the boolean state
@@ -154,11 +150,19 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    // Method to open alert dialog
+    /**
+     * Open alert dialog to user.
+     */
     private void openDialog() {
-        SampleDialog exampleDialog = new SampleDialog();
-        exampleDialog.show(getSupportFragmentManager(), "example dialog");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
+        builder.setTitle(R.string.preview_quality)
+                .setMessage(R.string.caption_quality)
+                .setPositiveButton((R.string.cancel), (dialogInterface, i) -> {
+                });
+        builder.create().show();
     }
+
 
     @Override
     protected void onStart() {
@@ -167,20 +171,21 @@ public class DetailsActivity extends AppCompatActivity {
         registerReceiver(broadcastReceiver, filter);
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
         unregisterReceiver(broadcastReceiver);
     }
 
-    // Method to download the photo
-    private void downloadImage(String URL) {
-        File direct = new File(Environment.getExternalStorageDirectory()
-                + "/WallpaperImages");
 
-        if (!direct.exists()) {
-            direct.mkdirs();
-        }
+    /**
+     * Download the photo to save it in gallery.
+     *
+     * @param URL is url of the photo
+     */
+    private void downloadImage(String URL) {
+
         DownloadManager mgr = (DownloadManager) this.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri downloadUri = Uri.parse(URL);
         DownloadManager.Request request = new DownloadManager.Request(
@@ -191,32 +196,50 @@ public class DetailsActivity extends AppCompatActivity {
                         | DownloadManager.Request.NETWORK_MOBILE)
                 .setAllowedOverRoaming(false).setTitle("Downloading")
                 .setDestinationInExternalPublicDir("/WallpaperPhotos", "fileName.jpg");
+        assert mgr != null;
         mgr.enqueue(request);
     }
 
-    // Method to share the photo
+
+    /**
+     * Share the photo to any app
+     *
+     * @param url is url of the photo
+     */
     private void shareImage(String url) {
-        Picasso.with(getApplicationContext()).load(url).into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("image/*");
-                i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap));
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(i, "Share Image"));
-            }
 
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-            }
+        // Get the photo by Picasso
+        Picasso.with(getApplicationContext())
+                .load(url)
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        });
+                        // Setup by the intent to share the photo
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("image/*");
+                        i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap));
+                        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        startActivity(Intent.createChooser(i, "Share Image"));
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    }
+                });
     }
 
-    // Method to get bitmap uri
+
+    /**
+     * Get bitmap uri
+     *
+     * @param bmp is the Bitmap
+     * @return Bitmap uri
+     */
     private Uri getLocalBitmapUri(Bitmap bmp) {
         Uri bmpUri = null;
         try {
@@ -232,7 +255,10 @@ public class DetailsActivity extends AppCompatActivity {
         return bmpUri;
     }
 
-    // Save the wallpaper in the favourites
+
+    /**
+     * Save the wallpaper in favourites screen
+     */
     private void saveWallpaper() {
         // Store the state of checkbox in variable
         mState = favouriteButton.isChecked();
@@ -243,13 +269,26 @@ public class DetailsActivity extends AppCompatActivity {
                 // Insert the selected move to the database
                 mDb.wallpaperDao().insertWallpaper(wallpapers);
             });
+
             // Save the state of checkBox
-            PreferenceManager.getDefaultSharedPreferences(this).edit()
-                    .putBoolean("checkBox1", mState).putString("mPhotoId", wallpapers.getId()).apply();
+            PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .edit()
+                    .putBoolean(wallpapers.getId(), mState)
+                    .apply();
+            PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .edit()
+                    .putBoolean("checkBox1", mState)
+                    .putString("mPhotoId", wallpapers.getId())
+                    .apply();
+
             // SnackBar
-            Snackbar snackbar = Snackbar
-                    .make(scrollView, (R.string.added_to_favou), Snackbar.LENGTH_SHORT);
-            snackbar.show();
+            Snackbar.make(scrollView, R.string.added_to_favou, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.see_list, view -> {
+                        startActivity(new Intent(DetailsActivity.this, FavouriteActivity.class));
+
+                    }).setActionTextColor(Color.CYAN).show();
 
         } else {
             // Remove wallpaper from the database
@@ -261,9 +300,29 @@ public class DetailsActivity extends AppCompatActivity {
             PreferenceManager.getDefaultSharedPreferences(this).edit()
                     .putBoolean("checkBox1", mState).putString("mPhotoId", "id").apply();
             // SnackBar
-            Snackbar snackbar = Snackbar
-                    .make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT);
-            snackbar.show();
+            Snackbar.make(scrollView, (R.string.removed_favou), Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        // Switch on id
+        switch (v.getId()) {
+
+            case R.id.iv_download:
+                downloadImage(mHighDimensionImage);
+                Toast.makeText(DetailsActivity.this, R.string.downloading, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.iv_share:
+                shareImage(mRegularDimensionImage);
+                break;
+            case R.id.iv_info:
+                openDialog();
+                break;
+            case R.id.ch_favourite:
+                saveWallpaper();
+                break;
         }
     }
 }

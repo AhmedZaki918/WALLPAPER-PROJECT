@@ -95,8 +95,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             intent.putExtra(Constants.INTENT_KEY, currentItem);
             mContext.startActivity(intent);
         });
-
     }
+
 
     /**
      * This method simply returns the number of items to display. It is used behind the scenes
@@ -106,15 +106,17 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
      */
     @Override
     public int getItemCount() {
-        return mWallpapers.size();
+        return mWallpapers != null ? mWallpapers.size() : 0;
     }
+
 
     /**
      * Cache of the children views for a list item.
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         // Initialize the views
         private ImageView mWallpaper;
+
 
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
@@ -123,7 +125,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
          * @param itemView The View that you inflated in
          *                 {@link MainAdapter#onCreateViewHolder(ViewGroup, int)}
          */
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             // Find a reference to the views
             mWallpaper = itemView.findViewById(R.id.iv_picture);

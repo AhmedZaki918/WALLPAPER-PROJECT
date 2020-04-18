@@ -22,8 +22,7 @@ public class Converter {
     @TypeConverter
     public static String fromClassUrls(Urls list) {
         Gson gson = new Gson();
-        String json = gson.toJson(list);
-        return json;
+        return gson.toJson(list);
     }
 
     // Two converter methods for User Class
@@ -37,7 +36,6 @@ public class Converter {
     @TypeConverter
     public static String fromClassUser(User list) {
         Gson gson = new Gson();
-        String json = gson.toJson(list);
-        return json;
+        return gson.toJson(list);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.wallpaper.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,10 +57,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private List<Wallpapers> mWallpapers;
 
-    @BindView(R.id.iv_no_wifi)
-    ImageView noWifiLogo;
-    @BindView(R.id.loading_indicator)
-    ProgressBar mProgressBar;
     @BindView(R.id.tv_empty_view)
     TextView mEmptyView;
     @BindView(R.id.swipe_refresh_layout)
@@ -70,8 +67,10 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mRecyclerView;
     @BindView(R.id.adView)
     AdView adView;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbar_favourite)
     Toolbar toolbar;
+    @BindView(R.id.loading_indicator)
+    ProgressBar progressBar;
 
     // For retrieve scroll position of the RecyclerView
     private static int index = -1;
@@ -80,12 +79,14 @@ public class MainActivity extends AppCompatActivity {
     NetworkInfo networkInfo;
     FirebaseAnalytics mFirebaseAnalytics;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Setup for action bar
         setSupportActionBar(toolbar);
 
         // Obtain the FirebaseAnalytics instance.
@@ -111,13 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
             // First check the current state of the network
             checkConnection();
-
             // If there is a network connection, fetch data
             if (networkInfo != null && networkInfo.isConnected()) {
 
                 mRecyclerView.setVisibility(View.VISIBLE);
                 mEmptyView.setVisibility(View.GONE);
-                noWifiLogo.setVisibility(View.GONE);
                 refreshButton.setVisibility(View.GONE);
 
                 // Calling the method
@@ -130,49 +129,43 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerView.setVisibility(View.GONE);
                 mEmptyView.setVisibility(View.VISIBLE);
                 mEmptyView.setText(R.string.no_internet);
-                noWifiLogo.setVisibility(View.VISIBLE);
                 refreshButton.setVisibility(View.VISIBLE);
-                noWifiLogo.setImageResource(R.drawable.no_signal);
             }
         });
 
         // Button to retry to fetch data from the server in case of (Connection lost)
         refreshButton.setOnClickListener(view -> {
 
+            // First check the current state of the network
             checkConnection();
             // If there is a network connection, fetch data
             if (networkInfo != null && networkInfo.isConnected()) {
 
-                mProgressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 mEmptyView.setVisibility(View.GONE);
-                noWifiLogo.setVisibility(View.GONE);
                 refreshButton.setVisibility(View.GONE);
                 getWallpapers();
 
             } else {
                 // If there is no network connection
                 mEmptyView.setText(R.string.no_internet);
-                noWifiLogo.setVisibility(View.VISIBLE);
-                noWifiLogo.setImageResource(R.drawable.no_signal);
-                Toast.makeText(MainActivity.this, R.string.no_internet, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.connection_lost, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Check sdk version first before downloading the image ( Only in case sdk >= 23 )
-    private boolean haveStoragePermission() {
+
+    /**
+     * Check sdk version first before downloading the image ( Only in case sdk >= 23 )
+     */
+    private void haveStoragePermission() {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            } else {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                return false;
             }
-        } else {
-            return true;
         }
     }
+
 
     @Override
     public void onPause() {
@@ -183,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         top = (v == null) ? 0 : (v.getTop() - mRecyclerView.getPaddingTop());
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -192,7 +186,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Displays wallpapers on the main activity by Retrofit library
+
+    /**
+     * Displays wallpapers on the main activity by Retrofit library
+     */
     private void getWallpapers() {
         // String variable to store Api key
         String apiKey = Constants.API_KEY;
@@ -200,9 +197,9 @@ public class MainActivity extends AppCompatActivity {
         Call<List<Wallpapers>> call = APIClient.getInstance().getApi().get_wallpaper(apiKey, 30);
         call.enqueue(new Callback<List<Wallpapers>>() {
             @Override
-            public void onResponse(Call<List<Wallpapers>> call, Response<List<Wallpapers>> response) {
+            public void onResponse(@NonNull Call<List<Wallpapers>> call, @NonNull Response<List<Wallpapers>> response) {
 
-                mProgressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
                 mWallpapers = response.body();
                 mAdapter = new MainAdapter(MainActivity.this, mWallpapers);
                 mRecyclerView.setHasFixedSize(true);
@@ -213,21 +210,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<Wallpapers>> call, Throwable t) {
-                mProgressBar.setVisibility(View.GONE);
+            public void onFailure(@NonNull Call<List<Wallpapers>> call, @NonNull Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 mEmptyView.setText(R.string.no_internet);
                 refreshButton.setVisibility(View.VISIBLE);
-                noWifiLogo.setVisibility(View.VISIBLE);
-                noWifiLogo.setImageResource(R.drawable.no_signal);
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -239,7 +236,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Check the state of internet connection
+
+    /**
+     * Check the state of internet connection
+     */
     private void checkConnection() {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager)
@@ -248,10 +248,13 @@ public class MainActivity extends AppCompatActivity {
         networkInfo = connMgr.getActiveNetworkInfo();
     }
 
-    // Run widget
+
+    /**
+     * Run widget
+     */
     private void runWidget() {
         ArrayList<String> InPref = fillRow(mWallpapers);
-        setPreferences("photographers", InPref, MainActivity.this);
+        setPreferences(InPref, MainActivity.this);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(MainActivity.this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
@@ -260,17 +263,29 @@ public class MainActivity extends AppCompatActivity {
         WallpaperWidgetProvider.updateAppWidget(MainActivity.this, appWidgetManager, appWidgetIds);
     }
 
-    // Setup preferences for widget
-    private void setPreferences(String arrayName, ArrayList<String> array, Context mContext) {
+
+    /**
+     * Setup preferences for widget
+     *
+     * @param array    of string
+     * @param mContext is context of an app
+     */
+    private void setPreferences(ArrayList<String> array, Context mContext) {
         SharedPreferences prefs = mContext.getSharedPreferences("appWidget", 0);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(arrayName + "_size", array.size());
+        editor.putInt("photographers" + "_size", array.size());
         for (int i = 0; i < array.size(); i++)
-            editor.putString(arrayName + "_" + i, array.get(i));
+            editor.putString("photographers" + "_" + i, array.get(i));
         editor.apply();
     }
 
-    // Draw the layout of the row
+
+    /**
+     * Draw the layout of the row
+     *
+     * @param userList of Wallpapers class
+     * @return an array list
+     */
     private ArrayList<String> fillRow(List<Wallpapers> userList) {
         ArrayList<String> arrayList = new ArrayList<>();
         for (int i = 0; i < userList.size(); i++) {

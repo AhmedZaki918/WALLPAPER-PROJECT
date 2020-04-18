@@ -7,11 +7,12 @@
     <string name="preview_quality">Preview Quality</string>
     <string name="caption_quality">Preview quality with a width of 1080 pixels. If you want the original size you must download the photo.</string>
     <string name="settings_menu_item">Settings</string>
-    <string name="no_internet">Connection lost</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="no_internet">Connection lost, Please check your internet connection and try again.</string>
+    <string name="appwidget_text">Wallpaper</string>
     <string name="add_widget">Add widget</string>
     <string name="retry">Retry</string>
-    <string name="added_to_favou">Added to favourite</string>
+    <string name="added_to_favou">Added to Favourite list</string>
     <string name="removed_favou">Removed from favourite</string>
     <string name="cancel">Cancel</string>
     <string name="favourite">Favourite</string>
@@ -21,6 +22,9 @@
     <string name="share_item" translatable="false">Share</string>
     <string name="download_item" translatable="false">Download</string>
     <string name="information_item" translatable="false">Information</string>
-    <string name="latest_wallpapers">Latest wallpapers</string>
     <string name="error_in_server">Error in server</string>
+    <string name="deleteOpe">Delete</string>
+    <string name="caption_delete">Swipe the image right or left to delete it from the favourite.</string>
+    <string name="see_list">SEE LIST</string>
+    <string name="wallpaperapp">WallpaperApp</string>
 </resources>

@@ -8,71 +8,81 @@
     android:background="@color/black"
     tools:mContext=".activity.DetailsActivity">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <include
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_favourite"
             layout="@layout/toolbar" />
 
 
         <ImageView
             android:id="@+id/iv_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/wallpaper_item"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/preview" />
 
         <TextView
             android:id="@+id/tv_photo_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
             android:fontFamily="serif"
+            android:shadowColor="@color/colorShadow"
+            android:shadowDx="6"
+            android:shadowDy="6"
+            android:shadowRadius="6"
             android:text="@string/photo_label"
             android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="@+id/iv_picture"
-            app:layout_constraintTop_toBottomOf="@+id/iv_picture" />
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_website_label"
+            app:layout_constraintStart_toStartOf="@+id/iv_picture" />
 
         <TextView
             android:id="@+id/tv_photographer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
             android:fontFamily="serif"
+            android:shadowColor="@color/colorShadow"
+            android:shadowDx="6"
+            android:shadowDy="6"
+            android:shadowRadius="6"
             android:textColor="@color/white"
-            android:textStyle="bold"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/tv_photo_label"
-            app:layout_constraintTop_toBottomOf="@+id/iv_picture"
+            app:layout_constraintTop_toTopOf="@+id/tv_photo_label"
             tools:text="Alex harry" />
 
         <TextView
             android:id="@+id/tv_website_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginStart="32dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="serif"
+            android:shadowColor="@color/colorShadow"
+            android:shadowDx="6"
+            android:shadowDy="6"
+            android:shadowRadius="6"
             android:text="@string/website_label"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_photo_label" />
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_picture"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <CheckBox
             android:id="@+id/ch_favourite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="128dp"
             android:background="@drawable/checkbox_state"
             android:button="@null"
             android:contentDescription="@string/favourite_item"
@@ -84,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginEnd="128dp"
             android:contentDescription="@string/share_item"
             app:layout_constraintEnd_toStartOf="@+id/ch_favourite"
             app:layout_constraintTop_toBottomOf="@+id/iv_picture"
@@ -94,10 +104,10 @@
             android:id="@+id/iv_download"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="128dp"
             android:layout_marginTop="24dp"
-            android:layout_marginEnd="32dp"
             android:contentDescription="@string/download_item"
-            app:layout_constraintEnd_toStartOf="@+id/iv_share"
+            app:layout_constraintStart_toEndOf="@+id/iv_info"
             app:layout_constraintTop_toBottomOf="@+id/iv_picture"
             app:srcCompat="@drawable/baseline_save_alt_white_24" />
 
@@ -105,13 +115,17 @@
             android:id="@+id/iv_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="128dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
             android:contentDescription="@string/information_item"
-            app:layout_constraintBottom_toTopOf="@+id/iv_picture"
-            app:layout_constraintEnd_toEndOf="@+id/iv_picture"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/iv_picture"
+            app:layout_constraintTop_toBottomOf="@+id/iv_picture"
             app:srcCompat="@drawable/baseline_error_outline_white_24" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
+

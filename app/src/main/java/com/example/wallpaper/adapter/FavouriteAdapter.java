@@ -46,6 +46,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         notifyDataSetChanged();
     }
 
+
     /**
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
      * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
@@ -60,6 +61,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         View view = LayoutInflater.from(mContext).inflate(R.layout.layout_favourite, null, false);
         return new ViewHolder(view);
     }
+
 
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified
@@ -81,7 +83,8 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         String picUrl = currentItem.urls.getmRegular();
 
         // Display the image by Picasso library
-        Picasso.with(mContext).load(picUrl)
+        Picasso.with(mContext)
+                .load(picUrl)
                 .into(holder.mWallpaper);
 
         // Set on click listener on the view
@@ -92,6 +95,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
             mContext.startActivity(intent);
         });
     }
+
 
     /**
      * This method simply returns the number of items to display. It is used behind the scenes
@@ -104,13 +108,15 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         return mWallpapers != null ? mWallpapers.size() : 0;
     }
 
+
     /**
      * Cache of the children views for a list item.
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         // Initialize the view
         private ImageView mWallpaper;
+
 
         /**
          * Constructor for our ViewHolder. Within this constructor, we get a reference to our
@@ -119,7 +125,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
          * @param itemView The View that you inflated in
          *                 {@link FavouriteAdapter#onCreateViewHolder(ViewGroup, int)}
          */
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
             mWallpaper = itemView.findViewById(R.id.iv_image);
         }

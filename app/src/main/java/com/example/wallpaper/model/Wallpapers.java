@@ -9,11 +9,14 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
+
 @Entity(tableName = "wallpaper")
 public class Wallpapers implements Parcelable {
 
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey
     @SerializedName("id")
     @NonNull
     // Id for each item
@@ -34,7 +37,7 @@ public class Wallpapers implements Parcelable {
     }
 
     protected Wallpapers(Parcel in) {
-        id = in.readString();
+        id = Objects.requireNonNull(in.readString());
         urls = in.readParcelable(Urls.class.getClassLoader());
         user = in.readParcelable(User.class.getClassLoader());
     }
@@ -64,13 +67,20 @@ public class Wallpapers implements Parcelable {
         parcel.writeParcelable(user, i);
     }
 
-    // Getter
+
+    /**
+     * Getter
+     */
+    @NonNull
     public String getId() {
         return id;
     }
 
-    // Setter
-    public void setId(String id) {
+
+    /**
+     * Setter
+     */
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 }

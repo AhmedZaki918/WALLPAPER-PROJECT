@@ -8,5 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="TitleBarAppearance">
+
+        <item name="android:shadowColor">@color/colorShadow</item>
+        <item name="android:shadowDx">6</item>
+        <item name="android:shadowDy">6</item>
+        <item name="android:shadowRadius">6</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
 </resources>

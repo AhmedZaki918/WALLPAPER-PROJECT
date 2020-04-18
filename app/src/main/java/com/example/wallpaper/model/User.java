@@ -27,7 +27,9 @@ public class User implements Parcelable {
         }
     };
 
-    // Getters method
+    /**
+     * Getters
+     */
     public String getmName() {
         return mName;
     }
