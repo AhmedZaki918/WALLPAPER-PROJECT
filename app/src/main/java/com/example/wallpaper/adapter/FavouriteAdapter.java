@@ -83,7 +83,7 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.View
         String picUrl = currentItem.urls.getmRegular();
 
         // Display the image by Picasso library
-        Picasso.with(mContext)
+        Picasso.get()
                 .load(picUrl)
                 .into(holder.mWallpaper);
 

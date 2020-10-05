@@ -84,7 +84,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
             holder.mWallpaper.setImageResource(R.drawable.error_server);
         } else {
             // Display the image by Picasso library
-            Picasso.with(mContext).load(picUrl)
+            Picasso.get().load(picUrl)
                     .into(holder.mWallpaper);
         }
 

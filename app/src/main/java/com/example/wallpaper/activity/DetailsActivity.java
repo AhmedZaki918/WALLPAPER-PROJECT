@@ -120,7 +120,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         mPhotographer = wallpapers.user.getmName();
 
         // Display the image By Picasso library
-        Picasso.with(this)
+        Picasso.get()
                 .load(mRegularDimensionImage)
                 .into(picture);
 
@@ -209,7 +209,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private void shareImage(String url) {
 
         // Get the photo by Picasso
-        Picasso.with(getApplicationContext())
+        Picasso.get()
                 .load(url)
                 .into(new Target() {
                     @Override
@@ -224,7 +224,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
                     }
 
                     @Override
