@@ -5,6 +5,7 @@
 * [General info](#general-info)
 * [Screenshots](#screenshots)
 * [Technologies](#technologies)
+* [Features](#features) 
 * [Setup](#setup)
 * [YouTube Link](#youtube-link)
 * [License](#license)
@@ -40,6 +41,13 @@ The main purpose of the app is downloading photos from the website directly inst
 - Google ads 19.4.0 (https://ads.google.com/home/)
 - Google Analytics 17.5.0 (https://developers.google.com/analytics)
 - Facebook Shimmer 0.4.0 (https://github.com/facebook/shimmer-android)
+
+
+## Features
+- Two languages included with app (Arabic and English).
+- Widget inclucded too.
+- High quality image after downloading it.
+- Sample UI to use.
 
 ## Setup
 
