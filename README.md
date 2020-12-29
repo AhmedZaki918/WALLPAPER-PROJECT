@@ -1,4 +1,4 @@
-# Wallpaper android app
+# Wallpaper App
 
 
 ## Table of contents
@@ -12,7 +12,7 @@
 
 
 ## General info
-The main purpose of the app is downloading photos from the website directly instead of searching google on that website to start downloading, What I’m trying to say I make it easier for the user to download the photos from it via an application.
+The main purpose of this android app is downloading photos from the website directly instead of searching google on that website to start downloading, What I’m trying to say I make it easier for the user to download the photos from it via an application.
 
 
 ## Screenshots
